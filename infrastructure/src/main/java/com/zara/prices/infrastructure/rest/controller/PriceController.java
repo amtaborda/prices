@@ -3,6 +3,7 @@ package com.zara.prices.infrastructure.rest.controller;
 import com.zara.prices.application.exception.BadRequestException;
 import com.zara.prices.application.ports.rest.PriceService;
 import com.zara.prices.domain.PriceDto;
+import com.zara.prices.infrastructure.rest.dto.PriceResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -34,19 +35,25 @@ public class PriceController {
      * @param date      application date
      * @param productId product identifier
      * @param brandId   brand identifier
-     * @return ResponseEntity of {@link PriceDto} object
+     * @return ResponseEntity of {@link PriceResponse} object
      */
     @GetMapping
-    public ResponseEntity<PriceDto> getPrices(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") final LocalDateTime date,
-                                              @RequestParam final Integer productId,
-                                              @RequestParam final Integer brandId) {
+    public ResponseEntity<PriceResponse> getPrices(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") final LocalDateTime date,
+                                                   @RequestParam final Integer productId,
+                                                   @RequestParam final Integer brandId) {
         validateParams(date, productId, brandId);
 
         Optional<PriceDto> price = apiService.getPrice(date, productId, brandId);
         log.debug("Controller - getPrice: {}", price);
 
         if (price.isPresent()) {
-            return ResponseEntity.ok().body(price.get());
+            return ResponseEntity.ok().body(PriceResponse.builder()
+                    .price(price.get().getPrice())
+                    .productId(price.get().getProductId())
+                    .brandId(price.get().getBrandId())
+                    .rate(price.get().getRate())
+                    .endDate(price.get().getEndDate())
+                    .startDate(price.get().getStartDate()).build());
         }
 
         return ResponseEntity.noContent().build();

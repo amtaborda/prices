@@ -3,8 +3,8 @@ package com.zara.prices.infrastructure.rest.controller;
 import com.zara.prices.application.exception.BadRequestException;
 import com.zara.prices.application.exception.GenericException;
 import com.zara.prices.application.ports.rest.PriceService;
-import com.zara.prices.domain.PriceDto;
 import com.zara.prices.infrastructure.h2.adapter.util.MockUtil;
+import com.zara.prices.infrastructure.rest.dto.PriceResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,7 +40,7 @@ class PriceControllerTest {
 
         when(apiService.getPrice(any(), any(), any())).thenReturn(MockUtil.getMockOptionalPriceDto());
 
-        ResponseEntity<PriceDto> responseEntity = priceController.getPrices(
+        ResponseEntity<PriceResponse> responseEntity = priceController.getPrices(
                 LocalDateTime.of(2020, 06, 14, 18, 0, 0), 1, 1);
 
         assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
@@ -54,7 +54,7 @@ class PriceControllerTest {
 
         when(apiService.getPrice(any(), any(), any())).thenReturn(Optional.empty());
 
-        ResponseEntity<PriceDto> responseEntity = priceController.getPrices(
+        ResponseEntity<PriceResponse> responseEntity = priceController.getPrices(
                 LocalDateTime.of(2020, 06, 14, 18, 0, 0), 1, 1);
 
         assertThat(responseEntity.getStatusCode().value()).isEqualTo(204);
